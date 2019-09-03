@@ -1,0 +1,251 @@
+select group_concat(cusid),salesid 
+from customer 
+group by salesid;
+
+
+SELECT a.cust_name, 
+a.city, b.name, b.city,b.commission  
+FROM customer a  
+INNER JOIN salesman b  
+ON a.salesman_id=b.salesman_id 
+WHERE b.commission>.12 
+AND a.city<>b.city;
+
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman", b.city 
+FROM customer a 
+LEFT OUTER JOIN salesman b 
+ON a.salesman_id=b.salesman_id 
+WHERE a.grade<300 
+ORDER BY a.customer_id;
+
+
+Q)
+Write a SQL statement to make a report with 
+customer name, city, order number, order date, 
+and order amount in ascending order according to 
+the order date to find that either any of the existing 
+customers have placed no order or placed one or more orders.
+
+SELECT a.cust_name,a.city, b.ord_no,
+b.ord_date,b.purch_amt AS "Order Amount" 
+FROM customer a 
+LEFT OUTER JOIN orders b 
+ON a.customer_id=b.customer_id 
+order by b.ord_date;
+
+
+
+Q)
+Write a SQL statement to make a report with customer name, 
+city, order number, order date, order amount salesman name 
+and commission to find that either any of the existing 
+customers have placed no order or placed one or more 
+orders by their salesman or by own.
+
+SELECT a.cust_name,a.city, b.ord_no,
+b.ord_date,b.purch_amt AS "Order Amount", 
+c.name,c.commission 
+FROM customer a 
+LEFT OUTER JOIN orders b 
+ON a.customer_id=b.customer_id 
+LEFT OUTER JOIN salesman c 
+ON c.salesman_id=b.salesman_id;
+
+
+
+
+SELECT DATE_FORMAT("2017-06-15", "%M %d %Y");
+
+
+Q)
+Write a SQL statement to make a list in ascending order 
+for the salesmen who works either for one or more customer 
+or not yet join under any of the customers.
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman", b.city 
+FROM customer a 
+RIGHT OUTER JOIN salesman b 
+ON b.salesman_id=a.salesman_id 
+ORDER BY b.salesman_id;
+
+
+Q)
+Write a SQL statement to make a list for the salesmen
+who either work for one or more customers or yet to join any of the customer. 
+The customer may have placed, either one or more orders on or above order amount 
+2000 and must have a grade, or he may not have placed any order to the associated 
+supplier.
+
+
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman", 
+c.ord_no, c.ord_date, c.purch_amt 
+FROM customer a 
+RIGHT OUTER JOIN salesman b 
+ON b.salesman_id=a.salesman_id 
+LEFT OUTER JOIN orders c 
+ON c.customer_id=a.customer_id 
+WHERE c.purch_amt>=2000 
+AND a.grade IS NOT NULL;
+
+
+Q)Write a SQL query to display the names of the company whose 
+products have an average price larger than or equal to Rs.350.
+
+
+SELECT AVG(pro_price), company_mast.com_name
+   FROM item_mast INNER JOIN company_mast
+   ON item_mast.pro_com= company_mast.com_id
+   GROUP BY company_mast.com_name
+   HAVING AVG(pro_price) >= 350;
+
+
+
+
+Q)
+Write a query in SQL to find the names of departments 
+where more than two employees are working.
+
+
+SELECT emp_department.dpt_name
+  FROM emp_details 
+     INNER JOIN emp_department
+       ON emp_dept =dpt_code
+        GROUP BY emp_department.dpt_name
+          HAVING COUNT(*) > 2;
+
+
+
+LAG:
+====
+
+SELECT empno,
+       ename,
+       job,
+       sal,
+       LAG(sal, 1, 0) OVER (ORDER BY sal) AS sal_prev,
+       sal - LAG(sal, 1, 0) OVER (ORDER BY sal) AS sal_diff
+FROM   emp;
+
+SELECT deptno,
+       empno,
+       ename,
+       job,
+       sal,
+       LAG(sal, 1, 0) OVER (PARTITION BY deptno ORDER BY sal) AS sal_prev
+FROM   emp;
+
+
+
+LEAD:
+=====
+
+SELECT empno,
+       ename,
+       job,
+       sal,
+       LEAD(sal, 1, 0) OVER (ORDER BY sal) AS sal_next,
+       LEAD(sal, 1, 0) OVER (ORDER BY sal) - sal AS sal_diff
+FROM   emp;
+
+SELECT deptno,
+       empno,
+       ename,
+       job,
+       sal,
+       LEAD(sal, 1, 0) OVER (PARTITION BY deptno ORDER BY sal) AS sal_next
+FROM   emp;
+
+
+
+DENSE RANK:
+===========
+
+SELECT empno,
+       deptno,
+       sal,
+       DENSE_RANK() OVER (PARTITION BY deptno ORDER BY sal) AS myrank
+FROM   emp;
+
+-------------------
+
+SELECT *
+FROM   (SELECT empno,
+               deptno,
+               sal,
+               DENSE_RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) AS myrank
+        FROM   emp)
+WHERE  myrank <= 2;
+
+
+MAX:
+====
+
+SELECT empno,
+       ename,
+       deptno,
+       sal,
+       MAX(sal) OVER (PARTITION BY deptno) AS max_sal_by_dept
+FROM   emp;
+
+
+MIN:
+====
+SELECT empno,
+       ename,
+       deptno,
+       sal,
+       MIN(sal) OVER (PARTITION BY deptno) AS min_sal_by_dept
+FROM   emp;
+
+
+ROW NUMBER:
+============
+SELECT empno,
+       ename,
+       deptno,
+       sal,
+       ROW_NUMBER() OVER (ORDER BY sal) AS row_num,
+       RANK() OVER (ORDER BY sal) AS row_rank,
+       DENSE_RANK() OVER (ORDER BY sal) AS row_dense_rank
+FROM   emp;
+
+
+SELECT empno,
+       ename,
+       deptno,
+       sal,
+       ROW_NUMBER() OVER (PARTITION BY deptno ORDER BY sal DESC) AS row_num
+FROM   emp;
+
+
+CASE WHEN:
+==========
+The following SQL will order the customers by City. 
+However, if City is NULL, then order by Country:
+
+
+SELECT CustomerName, City, Country
+FROM Customers
+ORDER BY
+(CASE
+    WHEN City IS NULL THEN Country
+    ELSE City
+END);
+
+
+SELECT DISTINCT product.model, 
+ CASE 
+ WHEN price IS NULL 
+ THEN 'Not available' 
+ ELSE CAST(price AS CHAR(20)) 
+ END price 
+FROM Product LEFT JOIN 
+ PC ON Product.model = PC.model
+WHERE product.type = 'pc';
+
+
