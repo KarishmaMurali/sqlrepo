@@ -90,6 +90,7 @@ count(*) over (partition by place_desc) EMP_PLACE_CNT
     left join place p on e.place_id=p.place_id
    order by emp_id;
 
+WE CAN USE NVL ALSO INSTEAD OF COALESCE
 
 OR
 
@@ -220,7 +221,7 @@ select sales_manager_name,cust_name from (
 	
 
 update salesman s
-inner join (select salesman_id,sum(purchased_amount) purchamt from customer group by  salesman_id) as a on s.salesman_id=a.salesman_id and  monthly_target < purchamt
+inner join (select salesman_id,sum(purchased_amount) purchamt from customer group by  salesman_id) as a on s.salesman_id=a.salesman_id a
 set s.monthly_target=a.purchamt;
 
 mysql> select * from salesman;
