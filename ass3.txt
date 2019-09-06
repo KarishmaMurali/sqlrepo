@@ -52,8 +52,8 @@ If there is null in Place or Designation show as 'OTHERS'"
 
 select EMP_ID,EMP_NAME,
  ifnull(DESC_NAME,'others') as DESC_NAME,
- ifnull(PLACE_DESC,'others') as PLACE_DESC,count(*) over (partition by desc_name) EMP_DESC_CNT,
-count(*) over (partition by place_desc) EMP_PLACE_CNT
+ ifnull(PLACE_DESC,'others') as PLACE_DESC,count(e.emp_id) over (partition by desc_name) EMP_DESC_CNT,
+count(e.emp_id) over (partition by place_desc) EMP_PLACE_CNT
    from employee e left join designation d on e.desc_id=d.desc_id
     left join place p on e.place_id=p.place_id
    order by emp_id;
@@ -118,6 +118,15 @@ count(*) over (partition by place_desc) as EMP_PLACE_CNT
 List All the Employees who is working in 'Data' or 'Cloud' project. 
 
 Note: Find Respective  keyword in project name"	
+(here in the question we must just list the employees in cloud or data project so it is necessary that we reduce the rows thus we use FILTER CLAUSE I.E. WHERE CLAUSE)
+
+select EMP_ID,EMP_NAME,
+ifnull(DESC_NAME,'others') as DESC_NAME,
+ifnull(PLACE_DESC,'others') as PLACE_DESC,ifnull(PROJ_NAME,'others') as PROJ_NAME
+from employee e left join designation d on e.desc_id=d.desc_id
+left join place p on e.place_id=p.place_id
+INNER join project1 pp on e.proj_id=pp.proj_id
+where proj_name like any('%Cloud%','%Data%') order by emp_id;
 
 
 select EMP_ID,EMP_NAME,
@@ -125,9 +134,8 @@ ifnull(DESC_NAME,'others') as DESC_NAME,
 ifnull(PLACE_DESC,'others') as PLACE_DESC,ifnull(PROJ_NAME,'others') as PROJ_NAME
 from employee e left join designation d on e.desc_id=d.desc_id
 left join place p on e.place_id=p.place_id
-left join project1 pp on e.proj_id=pp.proj_id
-where proj_name like '%Data%' or proj_name like '%Cloud%' order by emp_id;
-
+INNER join project1 pp on e.proj_id=pp.proj_id
+where proj_name like '%Cloud%' or proj_name like '%Data%' order by emp_id;
 
 
 +--------+---------------+-----------+------------+------------------------+
