@@ -247,3 +247,10 @@ mysql> select * from salesman;
 |           6 | Balaji        | Hyderabad |                6 |          15000 |
 +-------------+---------------+-----------+------------------+----------------+
 6 rows in set (0.00 sec)
+
+
+IN TERADATA:
+update A from salesman A,
+(select salesman_id,sum(Amount) as amt from customer group by salesman_id) as B 
+set targetamount=B.amt
+where A.salesman_id=B.salesman_id;
