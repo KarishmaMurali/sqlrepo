@@ -119,6 +119,9 @@ List All the Employees who is working in 'Data' or 'Cloud' project.
 
 Note: Find Respective  keyword in project name"	
 (here in the question we must just list the employees in cloud or data project so it is necessary that we reduce the rows thus we use FILTER CLAUSE I.E. WHERE CLAUSE)
+(WHERE condition is implemented only after all the joining)
+(to apply a condition in a particular join - we give it in the join condition itself)
+
 
 select EMP_ID,EMP_NAME,
 ifnull(DESC_NAME,'others') as DESC_NAME,
@@ -126,7 +129,7 @@ ifnull(PLACE_DESC,'others') as PLACE_DESC,ifnull(PROJ_NAME,'others') as PROJ_NAM
 from employee e left join designation d on e.desc_id=d.desc_id
 left join place p on e.place_id=p.place_id
 INNER join project1 pp on e.proj_id=pp.proj_id
-where proj_name like any('%Cloud%','%Data%') order by emp_id;
+and proj_name like any('%Cloud%','%Data%') order by emp_id;
 
 
 select EMP_ID,EMP_NAME,
